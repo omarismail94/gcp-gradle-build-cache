@@ -55,7 +55,7 @@ gradlePlugin {
             id = "androidx.build.gradle.gcpbuildcache"
             displayName = "Gradle GCP Build Cache Plugin"
             description = """
-                - Graduating to 1.0.0 stable version.
+                - Move to using GRPC to fetch cache entries from GCP. Local testing shows that it drops sequential download time by ~40%
             """.trimIndent()
             implementationClass = "androidx.build.gradle.gcpbuildcache.GcpGradleBuildCachePlugin"
             tags = listOf("buildcache", "gcp", "caching")
@@ -64,7 +64,7 @@ gradlePlugin {
 }
 
 group = "androidx.build.gradle.gcpbuildcache"
-version = "1.0.0"
+version = "1.0.1"
 
 testing {
     suites {
