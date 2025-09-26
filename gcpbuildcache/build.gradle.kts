@@ -41,10 +41,12 @@ kotlin {
     jvmToolchain {
         jvmToolchain(17)
     }
+    // Kotlin 1.9 is needed to support Gradle 8.4, if the value is changed, update README.md
     compilerOptions {
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+        @Suppress("DEPRECATION") // 1.9 is deprecated when using KGP 2.2.20
+        languageVersion.set(KotlinVersion.KOTLIN_1_9)
     }
-    coreLibrariesVersion = "2.0.0"
+    coreLibrariesVersion = "1.9.0"
 }
 
 gradlePlugin {

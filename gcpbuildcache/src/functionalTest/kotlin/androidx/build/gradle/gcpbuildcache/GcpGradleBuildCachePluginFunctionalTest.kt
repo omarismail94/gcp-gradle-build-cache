@@ -24,11 +24,28 @@ import org.gradle.testkit.runner.GradleRunner
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.junit.runner.RunWith
+import org.junit.runners.Parameterized
 
 /**
  * A simple functional test for the 'androidx.build.gradle.gcpbuildcache.GcpBuildCache' plugin.
  */
-class GcpGradleBuildCachePluginFunctionalTest {
+@RunWith(Parameterized::class)
+class GcpGradleBuildCachePluginFunctionalTest(private val gradleVersion: String) {
+    companion object {
+        @get:JvmStatic
+        @get:Parameterized.Parameters(name = "gradleVersion={0}")
+        @Suppress("unused") // needed for Parameterized
+        val params = listOf(
+            arrayOf("8.4"),
+            arrayOf("8.5"),
+            arrayOf("8.11.1"),
+            arrayOf("8.14"),
+            arrayOf("9.0.0"),
+            arrayOf("9.1.0"),
+        )
+    }
+
     @get:Rule val tempFolder = TemporaryFolder()
 
     private fun getProjectDir() = tempFolder.root
@@ -56,11 +73,12 @@ class GcpGradleBuildCachePluginFunctionalTest {
         getBuildFile().writeText("")
 
         // Run the build
-        val runner = GradleRunner.create()
-        runner.forwardOutput()
-        runner.withPluginClasspath()
-        runner.withArguments("tasks")
-        runner.withProjectDir(getProjectDir())
-        runner.build();
+        GradleRunner.create()
+            .forwardOutput()
+            .withGradleVersion(gradleVersion)
+            .withPluginClasspath()
+            .withArguments("tasks", "-s")
+            .withProjectDir(getProjectDir())
+            .build();
     }
 }
