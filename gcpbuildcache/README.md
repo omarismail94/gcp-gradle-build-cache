@@ -2,6 +2,10 @@
 
 An implementation of the Gradle Remote Cache that's backed by Google Cloud Storage buckets.
 
+## Requirements
+
+- Gradle 8.4 or newer
+
 ## Using the plugin
 
 In your `settings.gradle.kts` file add the following
@@ -12,7 +16,7 @@ import androidx.build.gradle.gcpbuildcache.GcpBuildCacheServiceFactory
 import androidx.build.gradle.gcpbuildcache.ExportedKeyGcpCredentials
 
 plugins {
-    id("androidx.build.gradle.gcpbuildcache") version "1.0.0"
+    id("androidx.build.gradle.gcpbuildcache") version "1.0.1"
 }
 
 buildCache {
@@ -35,7 +39,7 @@ If you are using Groovy, then you should do the following:
 
 ```groovy
 plugins {
-    id("androidx.build.gradle.gcpbuildcache") version "1.0.0"
+    id("androidx.build.gradle.gcpbuildcache") version "1.0.1"
 }
 
 import androidx.build.gradle.gcpbuildcache.GcpBuildCache
