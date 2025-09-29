@@ -27,6 +27,7 @@ import com.google.cloud.http.HttpTransportOptions
 import com.google.cloud.storage.*
 import org.gradle.api.GradleException
 import org.gradle.api.logging.Logging
+import org.gradle.api.provider.Provider
 import java.io.InputStream
 
 /**
@@ -37,13 +38,13 @@ internal class GcpStorageService(
     override val bucketName: String,
     gcpCredentials: GcpCredentials,
     messageOnAuthenticationFailure: String,
-    override val isPush: Boolean,
+    override val isPush: Provider<Boolean>,
     override val isEnabled: Boolean,
     private val sizeThreshold: Long = BLOB_SIZE_THRESHOLD
 ) : StorageService {
 
     private val storageOptions by lazy {
-        storageOptions(projectId, gcpCredentials, messageOnAuthenticationFailure, isPush)
+        storageOptions(projectId, gcpCredentials, messageOnAuthenticationFailure)
     }
 
     override fun load(cacheKey: String): InputStream? {
@@ -62,7 +63,7 @@ internal class GcpStorageService(
             return false
         }
 
-        if (!isPush) {
+        if (!isPush.get()) {
             logger.info("No push support")
             return false
         }
@@ -77,7 +78,7 @@ internal class GcpStorageService(
             return false
         }
 
-        if (!isPush) {
+        if (!isPush.get()) {
             return false
         }
         val blobId = BlobId.of(bucketName, cacheKey)
@@ -164,12 +165,10 @@ internal class GcpStorageService(
             projectId: String,
             gcpCredentials: GcpCredentials,
             messageOnAuthenticationFailure: String,
-            isPushSupported: Boolean
         ): StorageOptions? {
             val credentials = credentials(
                 gcpCredentials,
                 messageOnAuthenticationFailure,
-                isPushSupported
             ) ?: return null
             val retrySettings = RetrySettings.newBuilder()
             retrySettings.maxAttempts = 3
@@ -241,14 +240,10 @@ internal class GcpStorageService(
         private fun credentials(
             gcpCredentials: GcpCredentials,
             messageOnAuthenticationFailure: String,
-            isPushSupported: Boolean
         ): GoogleCredentials? {
-            val scopes = mutableListOf(
-                STORAGE_READ_ONLY,
+            val scopes = listOf(
+                STORAGE_READ_ONLY, STORAGE_READ_WRITE, STORAGE_FULL_CONTROL
             )
-            if (isPushSupported) {
-                scopes += listOf(STORAGE_READ_WRITE, STORAGE_FULL_CONTROL)
-            }
             return when (gcpCredentials) {
                 is ApplicationDefaultGcpCredentials -> {
                     defaultApplicationGcpCredentials(scopes, messageOnAuthenticationFailure, forceClearCache = false)
